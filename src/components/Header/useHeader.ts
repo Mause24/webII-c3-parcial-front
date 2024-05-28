@@ -4,7 +4,7 @@ import { useMemo } from "react"
 import { HeaderProps } from "./Header.types"
 
 export const useHeader = (props: HeaderProps) => {
-	const { isAdmin } = props
+	const { leftMenu } = props
 	const { isAuth, deleteSession } = useAuthStore()
 	const [refs, hovering] = useHovers()
 	const linksArray = useMemo(
@@ -35,7 +35,7 @@ export const useHeader = (props: HeaderProps) => {
 	return {
 		hovering,
 		refs,
-		isAdmin,
+		leftMenu,
 		isAuth,
 		linksArray,
 		deleteSession,

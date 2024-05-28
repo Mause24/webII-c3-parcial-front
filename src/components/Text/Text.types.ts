@@ -1,3 +1,5 @@
+import React from "react"
+
 export type TextTypes = {
 	abbr: React.DetailedHTMLProps<
 		React.HTMLAttributes<HTMLElement>,
@@ -157,7 +159,7 @@ export enum TextWeights {
 
 export interface TextProps<T extends keyof TextTypes> {
 	type: T
-	children: string
+	children: string | React.ReactNode | React.ReactNode[]
 	props?: Partial<TextTypes[T]>
 	weight?: keyof typeof TextWeights
 	size?: keyof typeof TextSizes
