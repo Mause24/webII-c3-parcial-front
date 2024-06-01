@@ -1,3 +1,3 @@
 export interface HeaderProps {
-	leftMenu?: boolean
+	rightMenu?: boolean
 }

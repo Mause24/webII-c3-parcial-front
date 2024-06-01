@@ -41,7 +41,7 @@ export const Home = (): JSX.Element => {
 							"w-60",
 							"h-60",
 							"rounded-2xl",
-							'hover:scale-110',
+							"hover:scale-110",
 							"hover:bg-primary-normal",
 							"[&:hover>*]:text-white"
 						)}
@@ -75,6 +75,7 @@ export const Home = (): JSX.Element => {
 								"w-60",
 								"h-60",
 								"rounded-2xl",
+								"hover:scale-110",
 								"hover:bg-primary-normal",
 								"[&:hover>*]:text-white"
 							)}

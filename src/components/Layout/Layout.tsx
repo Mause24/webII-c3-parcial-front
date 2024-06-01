@@ -9,7 +9,7 @@ export const Layout = (props: LayoutProps): JSX.Element => {
 
 	return (
 		<>
-			<Header leftMenu />
+			<Header />
 			<main className={clsx("min-h-[calc(100dvh-290px)]")}>
 				{children}
 			</main>

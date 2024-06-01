@@ -1,7 +1,7 @@
+import { PROFILES } from "@/interfaces"
 import { isEmpty } from "lodash"
 import { create } from "zustand"
 import { AuthStoreProps, Session } from "./AuthStore.types"
-import { PROFILES } from "@/interfaces"
 
 export const useAuthStore = create<AuthStoreProps>((set, get) => {
 	const currentLocalSession = JSON.parse(
@@ -10,7 +10,7 @@ export const useAuthStore = create<AuthStoreProps>((set, get) => {
 
 	const setSession = (newSession: Session): void => {
 		localStorage.setItem("session", JSON.stringify(newSession))
-		
+
 		set({ session: newSession })
 	}
 
@@ -29,6 +29,7 @@ export const useAuthStore = create<AuthStoreProps>((set, get) => {
 		const { session } = get()
 
 		return (
+			!isEmpty(session) &&
 			session.user.Profile.id === PROFILES.ADMIN &&
 			session.user.Profile.name === "ADMIN"
 		)
