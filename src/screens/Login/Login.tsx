@@ -97,7 +97,7 @@ export const Login = (): JSX.Element => {
 						<Button
 							type="submit"
 							disabled={isSubmitting}
-							title="Iniciar Sesion"
+							label="Iniciar Sesion"
 						/>
 					</form>
 				)}

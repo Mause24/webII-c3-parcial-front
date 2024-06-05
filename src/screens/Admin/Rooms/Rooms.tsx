@@ -1,14 +1,24 @@
 import { Button, CustomModal, Icon, Input, Text } from "@/components"
 import { ICONS } from "@/Constants"
-import { Box } from "@mui/material"
+import { Alert, Box, Snackbar } from "@mui/material"
 import { DataGrid, GridToolbar } from "@mui/x-data-grid"
 import clsx from "clsx"
-import { Formik } from "formik"
+import { isEmpty } from "lodash"
 import { useRooms } from "./useRooms"
 
 export const Rooms = () => {
-	const { columns, isOpen, rows, setIsOpen, onSubmit, validationSchema } =
-		useRooms()
+	const {
+		columns,
+		isOpen,
+		rows,
+		setIsOpen,
+		handleCloseSnackbar,
+		formik,
+		handleCloseModal,
+		snackbar,
+		setRowId,
+	} = useRooms()
+
 	return (
 		<div
 			className={clsx(
@@ -23,108 +33,94 @@ export const Rooms = () => {
 			)}
 		>
 			<CustomModal
-				onClose={() => setIsOpen(state => !state)}
+				onClose={handleCloseModal}
 				visible={isOpen}
 				onlyChild={false}
 			>
-				<Formik
-					initialValues={{
-						roomNumber: 0,
-						price: 0,
-						type: "",
-					}}
-					validationSchema={validationSchema}
-					onSubmit={(values, { setSubmitting }) => {
-						onSubmit(values, setSubmitting)
-					}}
-				>
-					{({
-						values,
-						errors,
-						touched,
-						handleChange,
-						handleBlur,
-						handleSubmit,
-						isSubmitting,
-					}) => (
-						<form
-							onSubmit={handleSubmit}
-							className={clsx(
-								"flex",
-								"flex-col",
-								"gap-y-4",
-								"py-4",
-								"w-full",
-								"rounded-md"
-							)}
-						>
-							<Text
-								type="h2"
-								props={{
-									className: clsx(
-										"text-2xl",
-										"text-primary-normal",
-										"text-center"
-									),
-								}}
-							>
-								Crear una habitacion
-							</Text>
-
-							<Input
-								type="text"
-								label="N° de habitacion"
-								id="roomNumber"
-								name="roomNumber"
-								autoComplete="roomNumber"
-								customType="googleInput"
-								onChange={handleChange}
-								onBlur={handleBlur}
-								value={values.roomNumber}
-								error={
-									touched.roomNumber
-										? errors.roomNumber
-										: undefined
-								}
-								required
-							/>
-
-							<Input
-								type="number"
-								label="Precio"
-								id="price"
-								name="price"
-								customType="googleInput"
-								autoComplete="cc-number"
-								onChange={handleChange}
-								onBlur={handleBlur}
-								value={values.price}
-								error={touched.price ? errors.price : undefined}
-								required
-							/>
-
-							<Input
-								type="text"
-								label="Tipo de habitacion"
-								id="type"
-								name="type"
-								customType="googleInput"
-								autoComplete="cc-type"
-								onChange={handleChange}
-								onBlur={handleBlur}
-								value={values.type}
-								error={touched.type ? errors.type : undefined}
-								required
-							/>
-
-							<Button
-								type="submit"
-								disabled={isSubmitting}
-								title="Crear habitacion"
-							/>
-						</form>
+				<form
+					onSubmit={formik.handleSubmit}
+					className={clsx(
+						"flex",
+						"flex-col",
+						"gap-y-4",
+						"py-4",
+						"w-full",
+						"rounded-md"
 					)}
-				</Formik>
+				>
+					<Text
+						type="h2"
+						props={{
+							className: clsx(
+								"text-2xl",
+								"text-primary-normal",
+								"text-center"
+							),
+						}}
+					>
+						Crear una habitacion
+					</Text>
+
+					<Input
+						type="number"
+						label="N° de habitacion"
+						id="roomNumber"
+						name="roomNumber"
+						autoComplete="cc-number"
+						customType="googleInput"
+						onChange={formik.handleChange}
+						onBlur={formik.handleBlur}
+						value={formik.values.roomNumber}
+						error={
+							formik.touched.roomNumber
+								? formik.errors.roomNumber
+								: undefined
+						}
+						required
+					/>
+
+					<Input
+						type="number"
+						label="Precio"
+						id="price"
+						name="price"
+						customType="googleInput"
+						autoComplete="cc-number"
+						onChange={formik.handleChange}
+						onBlur={formik.handleBlur}
+						value={formik.values.price}
+						error={
+							formik.touched.price
+								? formik.errors.price
+								: undefined
+						}
+						required
+					/>
+
+					<Input
+						type="text"
+						label="Tipo de habitacion"
+						id="type"
+						name="type"
+						customType="googleInput"
+						autoComplete="cc-type"
+						onChange={formik.handleChange}
+						onBlur={formik.handleBlur}
+						value={formik.values.type}
+						error={
+							formik.touched.type ? formik.errors.type : undefined
+						}
+						required
+					/>
+
+					<Button
+						type="submit"
+						disabled={
+							formik.isSubmitting || !isEmpty(formik.errors)
+						}
+						label="Crear habitacion"
+					/>
+				</form>
 			</CustomModal>
 
 			<Button
@@ -143,6 +139,7 @@ export const Rooms = () => {
 			</Button>
 			<Box sx={{ flex: 1, width: "100%" }}>
 				<DataGrid
+					editMode="row"
 					rows={rows}
 					columns={columns}
 					initialState={{
@@ -152,14 +149,26 @@ export const Rooms = () => {
 							},
 						},
 					}}
-					getRowId={row => `r-${row.roomNumber}-${row.type}`}
-					checkboxSelection
 					disableRowSelectionOnClick
-					density="standard"
+					onRowEditStart={() => setRowId(undefined)}
+					onRowEditStop={params => setRowId(params.id)}
 					disableDensitySelector
+					getRowId={params => params.code}
+					pageSizeOptions={[10, 25, 50]}
+					density="standard"
 					slots={{ toolbar: GridToolbar }}
 				/>
 			</Box>
+			{!!snackbar && (
+				<Snackbar
+					open
+					anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+					onClose={handleCloseSnackbar}
+					autoHideDuration={6000}
+				>
+					<Alert {...snackbar} onClose={handleCloseSnackbar} />
+				</Snackbar>
+			)}
 		</div>
 	)
 }

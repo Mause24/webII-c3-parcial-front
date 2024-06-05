@@ -38,12 +38,12 @@ export const MessageModal = (props: MessageModalProps): JSX.Element => {
 				{message && <Text type="p">{message}</Text>}
 				<div className="flex justify-around">
 					<Button
-						title={acceptOptions?.label ?? "Aceptar"}
+						label={acceptOptions?.label ?? "Aceptar"}
 						onClick={handleAccept}
 					/>
 					{handleDismiss && (
 						<Button
-							title={dismissOptions?.label ?? "Cancelar"}
+							label={dismissOptions?.label ?? "Cancelar"}
 							onClick={handleDismiss}
 						/>
 					)}

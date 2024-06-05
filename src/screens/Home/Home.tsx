@@ -1,9 +1,11 @@
 import { Button, Text } from "@/components"
 import { useAuthStore } from "@/stores"
 import clsx from "clsx"
+import { useNavigate } from "react-router-dom"
 
 export const Home = (): JSX.Element => {
 	const { isAdmin } = useAuthStore()
+	const navigate = useNavigate()
 
 	return (
 		<div
@@ -27,7 +29,10 @@ export const Home = (): JSX.Element => {
 					"gap-x-4"
 				)}
 			>
-				<Button variant="transparent">
+				<Button
+					variant="transparent"
+					onClick={() => navigate("/home/bookings")}
+				>
 					<div
 						className={clsx(
 							"flex",
@@ -61,7 +66,10 @@ export const Home = (): JSX.Element => {
 					</div>
 				</Button>
 				{isAdmin() && (
-					<Button variant="transparent">
+					<Button
+						variant="transparent"
+						onClick={() => navigate("/admin/rooms")}
+					>
 						<div
 							className={clsx(
 								"flex",

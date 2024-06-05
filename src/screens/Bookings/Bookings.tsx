@@ -1,11 +1,17 @@
 import { Button, CustomModal, Icon, Input, Text } from "@/components"
 import { ICONS } from "@/Constants"
-import { Alert, Snackbar } from "@mui/material"
+import {
+	Alert,
+	FormControl,
+	InputLabel,
+	MenuItem,
+	Select,
+	Snackbar,
+} from "@mui/material"
 import Box from "@mui/material/Box"
 import { DataGrid, GridToolbar } from "@mui/x-data-grid"
 import clsx from "clsx"
-import { Formik } from "formik"
-import { isEqual } from "lodash"
+import { isEmpty } from "lodash"
 import { useBookings } from "./useBookings"
 
 export const Bookings = () => {
@@ -14,12 +20,12 @@ export const Bookings = () => {
 		isOpen,
 		data,
 		setIsOpen,
-		onSubmit,
-		validationSchema,
 		handleCloseSnackbar,
 		snackbar,
+		rooms,
 		setRowId,
-		isCurrentRowEdited,
+		formik,
+		handleCloseModal,
 	} = useBookings()
 
 	return (
@@ -36,143 +42,141 @@ export const Bookings = () => {
 			)}
 		>
 			<CustomModal
-				onClose={() => setIsOpen(state => !state)}
+				onClose={handleCloseModal}
 				visible={isOpen}
 				onlyChild={false}
 			>
-				<Formik
-					initialValues={{
-						name: "",
-						cellphone: "",
-						bookingDate: new Date(),
-						checkInDate: null,
-						checkOutDate: null,
-						roomNumber: 0,
-					}}
-					validationSchema={validationSchema}
-					onSubmit={(values, { setSubmitting }) => {
-						onSubmit(values, setSubmitting)
-					}}
-				>
-					{({
-						values,
-						errors,
-						touched,
-						handleChange,
-						handleBlur,
-						handleSubmit,
-						isSubmitting,
-						setFieldValue,
-					}) => (
-						<form
-							onSubmit={handleSubmit}
-							className={clsx(
-								"flex",
-								"flex-col",
-								"gap-y-4",
-								"py-4",
-								"w-full",
-								"rounded-md"
-							)}
-						>
-							<Text
-								type="h2"
-								props={{
-									className: clsx(
-										"text-2xl",
-										"text-primary-normal",
-										"text-center"
-									),
-								}}
-							>
-								Hacer una reserva
-							</Text>
-
-							<Input
-								type="text"
-								label="Nombre de la reserva"
-								id="name"
-								name="name"
-								autoComplete="name"
-								customType="googleInput"
-								onChange={handleChange}
-								onBlur={handleBlur}
-								value={values.name}
-								error={touched.name ? errors.name : undefined}
-								required
-							/>
-
-							<Input
-								type="tel"
-								label="Telefono"
-								id="cellphone"
-								name="cellphone"
-								customType="googleInput"
-								autoComplete="tel"
-								onChange={handleChange}
-								onBlur={handleBlur}
-								value={values.cellphone}
-								className="outl"
-								error={
-									touched.cellphone
-										? errors.cellphone
-										: undefined
-								}
-								required
-							/>
-
-							<Input
-								type="date"
-								label="Fecha de reserva"
-								id="bookingDate"
-								name="bookingDate"
-								autoComplete="bookingDate"
-								customType="googleInput"
-								onChange={evt =>
-									setFieldValue(
-										"bookingDate",
-										new Date(evt.target.value)
-									)
-								}
-								onBlur={handleBlur}
-								value={values.bookingDate
-									.toISOString()
-									.slice(0, 10)}
-								error={
-									touched.bookingDate
-										? (errors.bookingDate as string)
-										: undefined
-								}
-								required
-							/>
-
-							<Input
-								type="number"
-								label="N° de habitacion"
-								id="roomNumber"
-								name="roomNumber"
-								customType="googleInput"
-								autoComplete="cc-number"
-								onChange={handleChange}
-								onBlur={handleBlur}
-								value={values.roomNumber}
-								className="outl"
-								error={
-									touched.roomNumber
-										? errors.roomNumber
-										: undefined
-								}
-								required
-							/>
-
-							<Button
-								type="submit"
-								disabled={isSubmitting}
-								title="Crear reserva"
-							/>
-						</form>
+				<form
+					onSubmit={formik.handleSubmit}
+					className={clsx(
+						"flex",
+						"flex-col",
+						"gap-y-4",
+						"py-4",
+						"w-full",
+						"rounded-md"
 					)}
-				</Formik>
+				>
+					<Text
+						type="h2"
+						props={{
+							className: clsx(
+								"text-2xl",
+								"text-primary-normal",
+								"text-center"
+							),
+						}}
+					>
+						Hacer una reserva
+					</Text>
+
+					<Input
+						type="text"
+						label="Nombre de la reserva"
+						id="name"
+						name="name"
+						autoComplete="name"
+						customType="googleInput"
+						onChange={formik.handleChange}
+						onBlur={formik.handleBlur}
+						value={formik.values.name}
+						error={
+							formik.touched.name ? formik.errors.name : undefined
+						}
+						required
+					/>
+
+					<Input
+						type="tel"
+						label="Telefono"
+						id="cellphone"
+						name="cellphone"
+						customType="googleInput"
+						autoComplete="tel"
+						onChange={formik.handleChange}
+						onBlur={formik.handleBlur}
+						value={formik.values.cellphone}
+						error={
+							formik.touched.cellphone
+								? formik.errors.cellphone
+								: undefined
+						}
+						required
+					/>
+
+					<Input
+						type="date"
+						label="Fecha de reserva"
+						id="bookingDate"
+						name="bookingDate"
+						autoComplete="shipping bday-day webauthn"
+						customType="googleInput"
+						min={new Date().toISOString().split("T")[0]}
+						onChange={evt =>
+							formik.setFieldValue(
+								"bookingDate",
+								new Date(evt.target.value)
+							)
+						}
+						onBlur={formik.handleBlur}
+						value={
+							formik.values.bookingDate
+								? formik.values.bookingDate
+										.toISOString()
+										.slice(0, 10)
+								: undefined
+						}
+						error={
+							formik.touched.bookingDate
+								? (formik.errors.bookingDate as string)
+								: undefined
+						}
+						required
+					/>
+
+					<FormControl fullWidth>
+						<InputLabel id="roomNumber">
+							N° de habitacion
+						</InputLabel>
+						<Select
+							id="roomNumber"
+							name="roomNumber"
+							labelId="roomNumber"
+							label="N° de habitacion"
+							onChange={evt =>
+								formik.setFieldValue(
+									"roomNumber",
+									Number(evt.target.value)
+								)
+							}
+							onBlur={formik.handleBlur}
+							error={
+								formik.touched.roomNumber
+									? Boolean(formik.errors.roomNumber)
+									: undefined
+							}
+							required
+						>
+							{rooms?.length > 0 &&
+								rooms.map(item => (
+									<MenuItem
+										key={item.value}
+										value={item.value}
+									>
+										{item.label}
+									</MenuItem>
+								))}
+						</Select>
+					</FormControl>
+
+					<Button
+						type="submit"
+						disabled={
+							formik.isSubmitting || !isEmpty(formik.errors)
+						}
+						label="Crear reserva"
+					/>
+				</form>
 			</CustomModal>
 
 			<Button
@@ -201,20 +205,12 @@ export const Bookings = () => {
 							},
 						},
 					}}
-					getRowId={row => `r-${row.name}-${row.roomNumber}`}
-					checkboxSelection
 					disableRowSelectionOnClick
 					density="standard"
 					disableDensitySelector
-					processRowUpdate={(newRow, oldRow) => {
-						isCurrentRowEdited.current = !isEqual(newRow, oldRow)
-						return newRow
-					}}
-					onRowEditStop={params => {
-						if (isCurrentRowEdited.current) {
-							setRowId(params.id)
-						}
-					}}
+					pageSizeOptions={[10, 25, 50]}
+					onRowEditStart={() => setRowId(undefined)}
+					onRowEditStop={params => setRowId(params.id)}
 					slots={{ toolbar: GridToolbar }}
 				/>
 			</Box>
