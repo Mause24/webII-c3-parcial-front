@@ -3,10 +3,12 @@ import { BookingBodyRequest, BookingTableBody } from "@/interfaces"
 import {
 	createBooking,
 	deleteBookingById,
+	getAllBookings,
+	getAllRooms,
 	getAllUserBookings,
-	getAllUserRooms,
 	updateBookingById,
 } from "@/services"
+import { useAuthStore } from "@/stores"
 import { AlertProps, Tooltip } from "@mui/material"
 import {
 	GridColDef,
@@ -28,6 +30,7 @@ export const useBookings = () => {
 	const [rowId, setRowId] = useState<number | string | undefined>()
 	const [data, setData] = useState<BookingTableBody[]>([])
 	const [rooms, setRooms] = useState<{ label: string; value: number }[]>([])
+	const { isAdmin } = useAuthStore()
 	const validationSchema = Yup.object().shape({
 		name: Yup.string()
 			.required("El nombre es obligatorio")
@@ -310,7 +313,9 @@ export const useBookings = () => {
 
 	const getData = async () => {
 		try {
-			const responseData = await getAllUserBookings()
+			const responseData = await (isAdmin()
+				? getAllBookings()
+				: getAllUserBookings())
 			setData(
 				responseData.map(item => ({
 					id: item.id,
@@ -336,7 +341,7 @@ export const useBookings = () => {
 
 	const getRooms = async () => {
 		try {
-			const responseData = await getAllUserRooms()
+			const responseData = await getAllRooms()
 			setRooms(
 				responseData.map(item => ({
 					label: String(item.roomNumber),
@@ -353,9 +358,14 @@ export const useBookings = () => {
 	}
 
 	useEffect(() => {
-		getRooms()
 		getData()
 	}, [])
+
+	useEffect(() => {
+		if (isOpen) {
+			getRooms()
+		}
+	}, [isOpen])
 
 	return {
 		isOpen,

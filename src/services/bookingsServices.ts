@@ -5,9 +5,20 @@ import {
 } from "@/interfaces"
 import { API } from "@/providers"
 
-export const getAllUserBookings = async () => {
+export const getAllBookings = async () => {
 	const response =
 		await API.get<ResponseBody<BookingBodyResponse[]>>("/booking")
+
+	if (response.status === 200 && response.data.data) {
+		return response.data.data
+	}
+
+	throw new Error(response.data.message)
+}
+
+export const getAllUserBookings = async () => {
+	const response =
+		await API.get<ResponseBody<BookingBodyResponse[]>>("/booking/user")
 
 	if (response.status === 200 && response.data.data) {
 		return response.data.data

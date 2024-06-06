@@ -1,7 +1,7 @@
 import { ResponseBody, RoomBodyResponse, RoomsBodyRequest } from "@/interfaces"
 import { API } from "@/providers"
 
-export const getAllUserRooms = async () => {
+export const getAllRooms = async () => {
 	const response = await API.get<ResponseBody<RoomBodyResponse[]>>("/rooms")
 
 	if (response.status === 200 && response.data.data) {

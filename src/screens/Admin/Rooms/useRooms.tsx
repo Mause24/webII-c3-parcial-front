@@ -3,7 +3,7 @@ import { RoomBodyResponse, RoomsBodyRequest } from "@/interfaces"
 import {
 	createRoom,
 	deleteRoomById,
-	getAllUserRooms,
+	getAllRooms,
 	updateRoomById,
 } from "@/services"
 import { AlertProps, Tooltip } from "@mui/material"
@@ -230,7 +230,7 @@ export const useRooms = () => {
 
 	const getData = async () => {
 		try {
-			const responseData = await getAllUserRooms()
+			const responseData = await getAllRooms()
 			setRows(responseData)
 		} catch (error) {
 			handleProcessRowError(error as Error)

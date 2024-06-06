@@ -23,13 +23,11 @@ export interface BookingBodyResponse {
 	id: number
 	name: string
 	cellphone: string
-	bookingDate: string // ISO 8601 date string
-	checkInDate: string // ISO 8601 date string
-	checkOutDate: string // ISO 8601 date string
+	bookingDate: string
+	checkInDate: string
+	checkOutDate: string
 	roomNumber: number
 	clientId: number
-	updatedAt: string // ISO 8601 date-time string
-	createdAt: string // ISO 8601 date-time string
 	Room: RoomBodyResponse
 	User: UserBooking
 }
