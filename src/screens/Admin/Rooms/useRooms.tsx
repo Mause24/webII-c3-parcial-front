@@ -154,8 +154,10 @@ export const useRooms = () => {
 				e.stopPropagation()
 
 				const bodyRequest = {
-					...params.row,
 					code: undefined,
+					price: params.row.price,
+					roomNumber: params.row.roomNumber,
+					type: params.row.type,
 				}
 
 				const response = await updateRoomById(

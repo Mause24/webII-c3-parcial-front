@@ -71,7 +71,15 @@ export const useBookings = () => {
 				e.stopPropagation()
 
 				const bodyRequest = {
-					...params.row,
+					name: params.row.name,
+					bookingDate: new Date(params.row.bookingDate),
+					cellphone: params.row.cellphone,
+					checkInDate: params.row.checkInDate
+						? new Date(params.row.checkInDate)
+						: null,
+					checkOutDate: params.row.checkOutDate
+						? new Date(params.row.checkOutDate)
+						: null,
 					roomNumber: Number(params.row.roomNumber),
 					id: undefined,
 				}
